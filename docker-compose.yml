@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Banco de Dados Relacional
+  postgres:
+    image: postgres:15-alpine
+    container_name: flash-sale-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=flashsale_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flash-sale-net
+
+  # Cache & Distributed Locks
+  redis:
+    image: redis:7-alpine
+    container_name: flash-sale-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    networks:
+      - flash-sale-net
+
+  # 👁Interface Visual para o Redis (Acesse localhost:8081)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: flash-sale-redis-ui
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - flash-sale-net
+
+volumes:
+  postgres_data:
+
+networks:
+  flash-sale-net:
+    driver: bridge

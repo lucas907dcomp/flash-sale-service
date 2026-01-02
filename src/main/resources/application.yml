@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: flash-sale-service
+
+  # Enable Project Loom (Virtual Threads) for high-throughput concurrency handling
+  threads:
+    virtual:
+      enabled: true
+
+  # Database Connection Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flashsale_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  # JPA & Hibernate Settings
+  jpa:
+    hibernate:
+      ddl-auto: update # Strategy for database schema updates
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        # Optimizes JDBC batch writing for performance
+        jdbc:
+          batch_size: 50
+
+  # Redis Configuration (Spring Data Redis)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000
+
+# AWS Cloud Integration (Disabled for local environment)
+spring.cloud.aws:
+  parameter-store:
+    enabled: false
+
+# Actuator Endpoints for Observability (Prometheus & Health Checks)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
